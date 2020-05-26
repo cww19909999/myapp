@@ -1,5 +1,5 @@
 export default{
-    name: 'login',
+    name: 'Login',
     path: '/login',
-    component: () => import ('@/views/User')
+    component: () => import ('@/views/Login')
 }
