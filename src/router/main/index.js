@@ -1,5 +1,8 @@
 export default{
     name: 'Main',
     path: '/main',
-    component: () => import('@/views/Main')
+    component: () => import('@/views/Main'),
+    meta: {
+        isLogin: true
+    }
 }
