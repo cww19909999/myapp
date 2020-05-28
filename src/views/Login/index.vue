@@ -74,15 +74,15 @@ export default {
   },
   methods:{
     login(){
-      this.$refs.loginForm.validate()
-        .then((valid)=>{
+      this.$refs.loginForm.validate().then(valid => {
+        if(valid){
           if(this.loginForm.ucode === '1234'){
             if(this.loginForm.uname === 'admin' && this.loginForm.upwd === '123456'){
               if(this.isChecked){
                 let dates = new Date();
                 dates.setTime(dates.getTime() + (7*1000*60*60*24));
-                document.cookie = `uname=${this.uname};expires=${dates.toUTCString()}`;
-                document.cookie = `upwd=${this.upwd};expires=${dates.toUTCString()}`;
+                document.cookie = `uname=${this.loginForm.uname};expires=${dates.toUTCString()}`;
+                document.cookie = `upwd=${this.loginForm.upwd};expires=${dates.toUTCString()}`;
               }else{
                 let  cookieList = document.cookie.split(';');
                 cookieList.forEach(item=>{
@@ -106,8 +106,7 @@ export default {
           //     没有就清除cookie
           //   否则提示错误
           // 否则就提示验证码错误
-      }).catch(()=>{
-        // this.$message.error('请输入正确参数！');
+        }
       })
     },
     resetLoginForm(){
