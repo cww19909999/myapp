@@ -8,6 +8,8 @@ import {
   Footer,
   Aside,
   Main,
+  Form,
+  FormItem,
   Row,
   Col,
   Input,
@@ -25,6 +27,8 @@ Vue.use(Header)
 Vue.use(Footer)
 Vue.use(Aside)
 Vue.use(Main)
+Vue.use(Form)
+Vue.use(FormItem)
 Vue.use(Row)
 Vue.use(Col)
 Vue.use(Input)
