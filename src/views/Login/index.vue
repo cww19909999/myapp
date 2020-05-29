@@ -78,6 +78,7 @@ export default {
         if(valid){
           if(this.loginForm.ucode === '1234'){
             if(this.loginForm.uname === 'admin' && this.loginForm.upwd === '123456'){
+              this.$message.success('登录成功');
               if(this.isChecked){
                 let dates = new Date();
                 dates.setTime(dates.getTime() + (7*1000*60*60*24));
