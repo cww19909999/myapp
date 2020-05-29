@@ -19,6 +19,9 @@ import {
   Message
 } from 'element-ui'
 
+// import axios from 'axiox'
+// axios.default.baseUrl = 'http://127.0.0.1/api/'
+// Vue.prototype.axios = axios
 
 Vue.config.productionTip = false
 
