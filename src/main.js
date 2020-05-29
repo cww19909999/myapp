@@ -21,9 +21,9 @@ import {
   MenuItem
 } from 'element-ui'
 
-// import axios from 'axiox'
-// axios.default.baseUrl = 'http://127.0.0.1/api/'
-// Vue.prototype.axios = axios
+import axios from 'axios'
+axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
+Vue.prototype.axios = axios
 
 Vue.config.productionTip = false
 

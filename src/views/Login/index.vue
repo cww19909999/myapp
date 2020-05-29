@@ -77,6 +77,11 @@ export default {
       this.$refs.loginForm.validate().then(valid => {
         if (valid) {
           if (this.loginForm.ucode === "1234") {
+            // this.axios.post('login',{username:this.uname, password: this.upwd}).then(res=>{
+            //   console.log(res.data)
+            // }).catch((err)=>{
+            //   console.log(err)
+            // })
             if (
               this.loginForm.uname === "admin" &&
               this.loginForm.upwd === "123456"

@@ -1,5 +1,5 @@
 <template>
-    <div>运营</div>
+    <div>用户管理</div>
 </template>
 <script>
 export default {

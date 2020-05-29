@@ -1,11 +1,11 @@
 <template>
-    <div>财务</div>
+    <div>数据统计</div>
 </template>
 <script>
 export default {
     
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 
 </style>

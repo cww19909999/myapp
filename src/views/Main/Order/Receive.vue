@@ -1,11 +1,11 @@
 <template>
-    <div>用户页面</div>
+    <div>待收货订单</div>
 </template>
 <script>
 export default {
     
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 
 </style>
