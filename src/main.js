@@ -5,7 +5,6 @@ import store from './store'
 import {
   Container,
   Header,
-  Footer,
   Aside,
   Main,
   Form,
@@ -16,7 +15,10 @@ import {
   Image,
   Checkbox,
   Button,
-  Message
+  Message,
+  Menu,
+  Submenu,
+  MenuItem
 } from 'element-ui'
 
 // import axios from 'axiox'
@@ -27,7 +29,6 @@ Vue.config.productionTip = false
 
 Vue.use(Container)
 Vue.use(Header)
-Vue.use(Footer)
 Vue.use(Aside)
 Vue.use(Main)
 Vue.use(Form)
@@ -38,6 +39,10 @@ Vue.use(Input)
 Vue.use(Image)
 Vue.use(Checkbox)
 Vue.use(Button)
+Vue.use(Menu)
+Vue.use(Submenu)
+Vue.use(MenuItem)
+
 
 Vue.prototype.$message = Message;
 

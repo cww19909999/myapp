@@ -1,11 +1,11 @@
 <template>
-    <div>产品</div>
+    <div>产品管理</div>
 </template>
 <script>
 export default {
     
 }
 </script>
-<style scoped>
+<style lang="less" scoped>
 
 </style>
