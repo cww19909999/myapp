@@ -25,7 +25,7 @@
             :index="'/' + subItem.path"
             v-for="subItem in item.children"
             :key="subItem.subid"
-            @click="checkActive('/' + subItem.path)"
+            @click="checkActive('/' + subItem.path, subItem.subtext)"
           >
             <template slot="title">
               <span>{{subItem.subtext}}</span>
@@ -51,14 +51,13 @@
       <el-main>
         <div class="main-header">
           <p>
-            <i class="el-icon-d-arrow-left"></i>
+            <i class="el-icon-d-arrow-left" @click="goback"></i>
           </p>
           <p>
             <i class="el-icon-s-home"></i>
           </p>
           <p>
             <span>{{ subRoute }}</span>
-            <i class="el-icon-close"></i>
           </p>
         </div>
         <div class="routerview-wrapper">
@@ -114,20 +113,23 @@ export default {
       menuCollapse: false,
       iconCollapse: "el-icon-s-fold",
       defaultActive: "/statistical",
-      subRoute: "数据统计"
+      subRoute: ""
     };
   },
   created() {
     this.uname = window.sessionStorage.getItem("uname");
-    this.defaultActive = sessionStorage.getItem('activePath') || '/statistical';
+    this.defaultActive = sessionStorage.getItem("activePath") || "/statistical";
+    this.subRoute = sessionStorage.getItem("subRoute") || "";
   },
   methods: {
+    // 折叠导航栏
     toggleCollapse() {
       this.menuCollapse = !this.menuCollapse;
       this.iconCollapse = this.menuCollapse
         ? "el-icon-s-unfold"
         : "el-icon-s-fold";
     },
+    // 点击刷新按钮刷新页面
     reloadPage() {
       // this.$router.go(0);location.reload();
       this.isRouterAlive = false;
@@ -135,9 +137,34 @@ export default {
         this.isRouterAlive = true;
       });
     },
-    checkActive(activePath) {
+    // 点击导航栏选项
+    checkActive(activePath, subText) {
       this.defaultActive = activePath;
-      sessionStorage.setItem("activePath", activePath);
+      this.subRoute = subText;
+    },
+    // 点击返回按钮
+    goback() {
+      this.$router.back();
+    }
+  },
+  watch: {
+    // 监听导航栏高亮
+    defaultActive(newVal, oldVal) {
+      sessionStorage.setItem("activePath", newVal);
+    },
+    // 监听导航栏高亮标题
+    subRoute(newVal, oldVal) {
+      sessionStorage.setItem("subRoute", newVal);
+    },
+    // 监听路由变化导航栏高亮变化
+    $route(to, from) {
+      this.defaultActive = to.path;
+      this.menuList.forEach(item => {
+        item.children.forEach(subitem => {
+          if (subitem.path === to.path.slice(1))
+            this.subRoute = subitem.subtext;
+        });
+      });
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -191,35 +218,36 @@ export default {
       color: #fff;
     }
   }
-  
 }
 .el-main {
   background: #eee;
   padding: 0;
-  .main-header{
+  .main-header {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     box-shadow: 0 3px 10px #5e5d5d;
-    p{
+    p {
       border-right: 1px solid #5e5d5d;
       display: flex;
-      align-items:center;
+      align-items: center;
+      &:last-child {
+        border-right: none;
+      }
     }
-    i{
+    i {
       padding: 8px;
       font-size: 1.5rem;
-      
-      &.el-icon-d-arrow-left,
-      &.el-icon-close{
+
+      &.el-icon-d-arrow-left {
         cursor: pointer;
       }
     }
-    span{
+    span {
       padding: 5px;
     }
   }
-  .routerview-wrapper{
+  .routerview-wrapper {
     margin: 20px;
     background: #fff;
   }
