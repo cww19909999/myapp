@@ -145,6 +145,7 @@ export default {
 .login-container {
   width: 100%;
   height: 95vh;
+  min-height: 500px;
   position: relative;
 
   .login-wrapper {

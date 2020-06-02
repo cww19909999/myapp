@@ -49,7 +49,21 @@
       </el-header>
       <!-- 主体内容 -->
       <el-main>
-        <router-view v-if="isRouterAlive" />
+        <div class="main-header">
+          <p>
+            <i class="el-icon-d-arrow-left"></i>
+          </p>
+          <p>
+            <i class="el-icon-s-home"></i>
+          </p>
+          <p>
+            <span>{{ subRoute }}</span>
+            <i class="el-icon-close"></i>
+          </p>
+        </div>
+        <div class="routerview-wrapper">
+          <router-view v-if="isRouterAlive" />
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -99,12 +113,13 @@ export default {
       uname: "",
       menuCollapse: false,
       iconCollapse: "el-icon-s-fold",
-      defaultActive: ""
+      defaultActive: "/statistical",
+      subRoute: "数据统计"
     };
   },
   created() {
     this.uname = window.sessionStorage.getItem("uname");
-    this.defaultActive = sessionStorage.getItem("activePath");
+    this.defaultActive = sessionStorage.getItem('activePath') || '/statistical';
   },
   methods: {
     toggleCollapse() {
@@ -176,8 +191,37 @@ export default {
       color: #fff;
     }
   }
+  
 }
 .el-main {
-  background: #ffffff;
+  background: #eee;
+  padding: 0;
+  .main-header{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    box-shadow: 0 3px 10px #5e5d5d;
+    p{
+      border-right: 1px solid #5e5d5d;
+      display: flex;
+      align-items:center;
+    }
+    i{
+      padding: 8px;
+      font-size: 1.5rem;
+      
+      &.el-icon-d-arrow-left,
+      &.el-icon-close{
+        cursor: pointer;
+      }
+    }
+    span{
+      padding: 5px;
+    }
+  }
+  .routerview-wrapper{
+    margin: 20px;
+    background: #fff;
+  }
 }
 </style>

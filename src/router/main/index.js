@@ -5,7 +5,7 @@ export default{
     meta: {
         isLogin: true
     },
-    redirect: '/statistical',
+    redirect: sessionStorage.getItem('activePath') || '/statistical',
     children:[
         {
             path: '/promanage',
@@ -70,7 +70,8 @@ export default{
         {
             path: '/statistical',
             // name: 'Procategory',
-            component: () => import('@/views/Main/Data/Statistical')
+            component: () => import('@/views/Main/Data/Statistical'),
+            props: true
         }
     ]
 }

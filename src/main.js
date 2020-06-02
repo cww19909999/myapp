@@ -18,12 +18,17 @@ import {
   Message,
   Menu,
   Submenu,
-  MenuItem
+  MenuItem,
+  Card,
+  Select,
+  Option,
+  DatePicker
 } from 'element-ui'
 
 import axios from 'axios'
 axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
 Vue.prototype.axios = axios
+
 
 Vue.config.productionTip = false
 
@@ -42,6 +47,12 @@ Vue.use(Button)
 Vue.use(Menu)
 Vue.use(Submenu)
 Vue.use(MenuItem)
+Vue.use(Card)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(DatePicker)
+
+
 
 
 Vue.prototype.$message = Message;
