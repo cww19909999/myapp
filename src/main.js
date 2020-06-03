@@ -22,8 +22,15 @@ import {
   Card,
   Select,
   Option,
-  DatePicker
+  DatePicker,
+  Divider,
+  Table,
+  TableColumn,
+  Switch,
+  Pagination
 } from 'element-ui'
+
+import './assets/css/common.css'
 
 import axios from 'axios'
 axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/'
@@ -51,6 +58,14 @@ Vue.use(Card)
 Vue.use(Select)
 Vue.use(Option)
 Vue.use(DatePicker)
+Vue.use(Divider)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(Switch)
+Vue.use(Pagination)
+
+
+
 
 
 
