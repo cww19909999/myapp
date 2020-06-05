@@ -79,29 +79,30 @@
       <el-divider></el-divider>
       <!-- 商品列表 -->
       <el-table :data="productList" border style="width: 100%">
-        <el-table-column prop="name" label="商品名称"  align="center"></el-table-column>
-        <el-table-column prop="price" label="商品规格"  align="center"></el-table-column>
-        <el-table-column prop="rentNum" label="租赁量"  align="center"></el-table-column>
-        <el-table-column prop="purchases" label="购买量"  align="center"></el-table-column>
-        <el-table-column prop="uvNum" label="UV浏览量"  align="center"></el-table-column>
-        <el-table-column prop="tag" label="标签"  align="center"></el-table-column>
+        <el-table-column prop="name" label="商品名称" align="center"></el-table-column>
+        <el-table-column prop="price" label="商品价格" align="center"></el-table-column>
+        <el-table-column prop="rentNum" label="租赁量" align="center"></el-table-column>
+        <el-table-column prop="purchases" label="购买量" align="center"></el-table-column>
+        <el-table-column prop="uvNum" label="UV浏览量" align="center"></el-table-column>
+        <el-table-column prop="tag" label="标签" align="center">
+          <template v-slot="scope">
+            <el-row v-for="item in scope.row.tag" :key="item">
+              <el-col :span="24">{{item | tagFilter}}</el-col>
+            </el-row>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" align="center">
           <template v-slot="scope">
             <el-switch
               v-model="scope.row.status"
               active-color="#13ce66"
               active-text="上架"
-              inactive-text="下架">
-            </el-switch>
+              inactive-text="下架"
+            ></el-switch>
           </template>
         </el-table-column>
-        <el-table-column prop="startTime" label="创建时间" width="100" align="center"></el-table-column>
-        <el-table-column prop="updateTime" label="更新时间" width="100" align="center">
-          <template slot-scope="scope">
-            <p>{{ scope.row.startTime }}</p>
-            <!-- <p>{{ scope.row.startTime }}</p> -->
-          </template>
-        </el-table-column>
+        <el-table-column prop="startTime" label="创建时间" width="103" align="center"></el-table-column>
+        <el-table-column prop="updateTime" label="更新时间" width="105" align="center"></el-table-column>
         <el-table-column fixed="right" label="操作" width="150" align="center">
           <template v-slot="scope">
             <el-button @click="proDetail(scope.row.id)" type="text" size="small">详情</el-button>
@@ -111,7 +112,7 @@
         </el-table-column>
       </el-table>
       <!-- 分页条 -->
-       <el-pagination
+      <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="searchProForm.pageNum"
@@ -119,8 +120,8 @@
         :page-size="searchProForm.pageSize"
         layout="prev, pager, next, jumper, -> , total, sizes"
         :total="total"
-        background>
-      </el-pagination>
+        background
+      ></el-pagination>
     </el-card>
   </div>
 </template>
@@ -141,7 +142,7 @@ export default {
         startTime: "",
         endTime: "",
         pageSize: 1,
-        pageNum: 1,
+        pageNum: 1
       },
       total: 11,
       beginTime: {
@@ -163,51 +164,417 @@ export default {
           }
         }
       },
-      productList: [
-        {id: 1, name: '苹果11', price: '6799', rentNum: '12', purchases: '12', uvNum: '9999', tag: ['discounts', 'highclass'], status: true, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 2, name: '苹果10', price: '1111', rentNum: '13', purchases: '6', uvNum: '2222', tag: ['recommend', 'highclass'], status: false, startTime: '2019-9-6 14:48:33', updateTime: '2019-10-16:10:00:00'},
-        {id: 3, name: '苹果9', price: '2222', rentNum: '22', purchases: '3', uvNum: '9999', tag: ['discounts', 'hotsale'], status: true, startTime: '2019-12-6 14:48:33', updateTime: '2020-12-16:10:00:00'},
-        {id: 4, name: '苹果8', price: '3333', rentNum: '33', purchases: '2', uvNum: '3333', tag: ['discounts', 'highclass', 'recommend', 'hotsale'], status: true, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 5, name: '苹果7', price: '4444', rentNum: '13', purchases: '12', uvNum: '9999', tag: ['discounts', 'highclass'], status: false, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 6, name: '苹果6', price: '5555', rentNum: '32', purchases: '19', uvNum: '2222', tag: ['discounts', 'highclass'], status: true, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 7, name: '苹果5', price: '6666', rentNum: '654', purchases: '192', uvNum: '9999', tag: ['discounts', 'highclass'], status: true, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 8, name: '苹果4', price: '7777', rentNum: '46', purchases: '12', uvNum: '1111', tag: ['discounts', 'highclass'], status: false, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 9, name: '苹果3', price: '88888', rentNum: '565', purchases: '126', uvNum: '9999', tag: ['discounts', 'highclass'], status: false, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 10, name: '苹果2', price: '9999', rentNum: '65', purchases: '125', uvNum: '123', tag: ['discounts', 'highclass'], status: false, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 11, name: '苹果1', price: '8765', rentNum: '56', purchases: '121', uvNum: '321', tag: ['discounts', 'highclass'], status: false, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'},
-        {id: 12, name: '苹果12', price: '4545', rentNum: '23', purchases: '102', uvNum: '333', tag: ['discounts', 'highclass'], status: true, startTime: '2019-12-6 14:48:33', updateTime: '2019-12-16:10:00:00'}
+      productList0: [
+        {
+          id: 1,
+          name: "苹果11",
+          spec: "a",
+          price: "6799",
+          rentNum: "12",
+          purchases: "12",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 2,
+          name: "苹果10",
+          spec: "b",
+          price: "1111",
+          rentNum: "13",
+          purchases: "6",
+          uvNum: "2222",
+          tag: ["recommend", "highclass"],
+          status: false,
+          startTime: "2019-9-6 14:48:33",
+          updateTime: "2019-10-16 10:00:00"
+        },
+        {
+          id: 3,
+          name: "苹果9",
+          spec: "c",
+          price: "2222",
+          rentNum: "22",
+          purchases: "3",
+          uvNum: "9999",
+          tag: ["discounts", "hotsale"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2020-12-16 10:00:00"
+        },
+        {
+          id: 4,
+          name: "苹果8",
+          spec: "d",
+          price: "3333",
+          rentNum: "33",
+          purchases: "2",
+          uvNum: "3333",
+          tag: ["discounts", "highclass", "recommend", "hotsale"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 5,
+          name: "苹果7",
+          spec: "e",
+          price: "4444",
+          rentNum: "13",
+          purchases: "12",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 6,
+          name: "苹果6",
+          spec: "a",
+          price: "5555",
+          rentNum: "32",
+          purchases: "19",
+          uvNum: "2222",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 7,
+          name: "苹果5",
+          spec: "b",
+          price: "6666",
+          rentNum: "654",
+          purchases: "192",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 8,
+          name: "苹果4",
+          spec: "c",
+          price: "7777",
+          rentNum: "46",
+          purchases: "12",
+          uvNum: "1111",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 9,
+          name: "苹果3",
+          spec: "d",
+          price: "88888",
+          rentNum: "565",
+          purchases: "126",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 10,
+          name: "苹果2",
+          spec: "abc",
+          price: "9999",
+          rentNum: "65",
+          purchases: "125",
+          uvNum: "123",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 11,
+          name: "苹果1",
+          spec: "abc",
+          price: "8765",
+          rentNum: "56",
+          purchases: "121",
+          uvNum: "321",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 12,
+          name: "苹果12",
+          spec: "abc",
+          price: "4545",
+          rentNum: "23",
+          purchases: "102",
+          uvNum: "333",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 13,
+          name: "苹果11",
+          spec: "a",
+          price: "6799",
+          rentNum: "12",
+          purchases: "12",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 14,
+          name: "苹果10",
+          spec: "b",
+          price: "1111",
+          rentNum: "13",
+          purchases: "6",
+          uvNum: "2222",
+          tag: ["recommend", "highclass"],
+          status: false,
+          startTime: "2019-9-6 14:48:33",
+          updateTime: "2019-10-16 10:00:00"
+        },
+        {
+          id: 15,
+          name: "苹果9",
+          spec: "c",
+          price: "2222",
+          rentNum: "22",
+          purchases: "3",
+          uvNum: "9999",
+          tag: ["discounts", "hotsale"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2020-12-16 10:00:00"
+        },
+        {
+          id: 16,
+          name: "苹果8",
+          spec: "d",
+          price: "3333",
+          rentNum: "33",
+          purchases: "2",
+          uvNum: "3333",
+          tag: ["discounts", "highclass", "recommend", "hotsale"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 17,
+          name: "苹果7",
+          spec: "e",
+          price: "4444",
+          rentNum: "13",
+          purchases: "12",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 18,
+          name: "苹果6",
+          spec: "a",
+          price: "5555",
+          rentNum: "32",
+          purchases: "19",
+          uvNum: "2222",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 19,
+          name: "苹果5",
+          spec: "b",
+          price: "6666",
+          rentNum: "654",
+          purchases: "192",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 20,
+          name: "苹果4",
+          spec: "c",
+          price: "7777",
+          rentNum: "46",
+          purchases: "12",
+          uvNum: "1111",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 21,
+          name: "苹果3",
+          spec: "d",
+          price: "88888",
+          rentNum: "565",
+          purchases: "126",
+          uvNum: "9999",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 22,
+          name: "苹果2",
+          spec: "abc",
+          price: "9999",
+          rentNum: "65",
+          purchases: "125",
+          uvNum: "123",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 23,
+          name: "苹果1",
+          spec: "abc",
+          price: "8765",
+          rentNum: "56",
+          purchases: "121",
+          uvNum: "321",
+          tag: ["discounts", "highclass"],
+          status: false,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        },
+        {
+          id: 24,
+          name: "苹果12",
+          spec: "abc",
+          price: "4545",
+          rentNum: "23",
+          purchases: "102",
+          uvNum: "333",
+          tag: ["discounts", "highclass"],
+          status: true,
+          startTime: "2019-12-6 14:48:33",
+          updateTime: "2019-12-16 10:00:00"
+        }
       ],
-      
+      productList: []
     };
   },
-
+  created() {
+    this.getProductList();
+  },
   methods: {
+    getProductList() {
+      let { pname, pspec, plabel, startTime, endTime } = this.searchProForm;
+      let proList1 = [];
+      if(pname === '') proList1 = this.productList0
+      else{
+        for (let product of this.productList0){
+          if (product.name.indexOf(pname) !== -1) proList1.push(product);
+        }
+      }
+      let proList2 = [];
+      if(pspec === '') proList2 = proList1
+      else{
+        for (let product of proList1){
+          if (product.spec.indexOf(pspec) !== -1) proList2.push(product);
+        }
+      }
+      let proList3 = [];
+      if(plabel === '') proList3 = proList2;
+      else{
+        for (let product of proList2){
+          if (product.tag.indexOf(plabel) !== -1) proList3.push(product);
+        }
+      }
+      let proList4 = [];
+      if (startTime === "" || endTime === "") proList4 = proList3
+      else{
+        for (let product of proList3){
+          if (
+            new Date(startTime).getTime() <= new Date(product.startTime).getTime() &&
+            new Date(endTime).getTime() >= new Date(product.startTime).getTime()
+          ) proList4.push(product);
+        }
+      }
+      let result = [];
+      let start, end;
+      start = (this.searchProForm.pageNum - 1) * this.searchProForm.pageSize;
+      end = start + this.searchProForm.pageSize;
+      if (end > proList4.length) end = proList4.length;
+      for (let i = start; i < end; i++) {
+        result.push(proList4[i]);
+      }
+      this.productList = result;
+      this.total = proList4.length;
+    },
     searchProducts() {
-      console.log("发送axios获取列表");
+      this.getProductList();
     },
     resetSearchForm() {
       this.$refs.searchProForm.resetFields();
     },
-    proDetail(id){
-      console.log(id,'详情')
+    proDetail(id) {
+      console.log(id, "详情");
     },
-    proEdit(id){
-      console.log(id,'编辑')
+    proEdit(id) {
+      console.log(id, "编辑");
     },
-    proDelete(id){
-      console.log(id,'删除')
+    proDelete(id) {
+      console.log(id, "删除");
     },
-    handleSizeChange(newSize){
-      console.log(newSize, '发起数据请求')
+    handleSizeChange(newSize) {
+      this.searchProForm.pageSize = newSize;
+      this.getProductList();
     },
-    handleCurrentChange(newNum){
-      console.log(newNum, '发起数据请求')
+    handleCurrentChange(newNum) {
+      this.searchProForm.pageNum = newNum;
+      this.getProductList();
+    }
+  },
+  filters: {
+    tagFilter(val) {
+      switch (val) {
+        case "discounts":
+          return "优惠";
+          break;
+        case "highclass":
+          return "高档";
+          break;
+        case "recommend":
+          return "推荐";
+          break;
+        default: 
+          return "热卖";
+          break;
+      }
     }
   }
 };
 </script>
 <style lang="less" scoped>
-.delbtn{
+.delbtn {
   color: red;
 }
 </style>
