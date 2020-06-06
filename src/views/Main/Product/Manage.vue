@@ -78,7 +78,7 @@
       <!-- 分割线 -->
       <el-divider></el-divider>
       <!-- 商品列表 -->
-      <el-table :data="productList" border style="width: 100%">
+      <el-table :data="productList" border style="width: 100%" :default-sort="{prop: 'startTime', order: 'ascending'}">
         <el-table-column prop="name" label="商品名称" align="center" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="price" label="商品价格" align="center">
           <template v-slot="scope">
@@ -128,27 +128,33 @@
       ></el-pagination>
     </el-card>
     <!-- 新增商品对话框 -->
-    <el-dialog title="新增商品" :visible.sync="addDialogVisible" width="50%" modal>
+    <el-dialog title="新增商品" :visible.sync="addDialogVisible" width="50%" modal @closed="clearAddDialog">
       <el-form
-        ref="editProFormRef"
-        :model="editProForm"
-        :rules="editProFormRules"
-        label-width="80px"
+        ref="addProFormRef"
+        :model="addProForm"
+        :rules="addProFormRules"
+        label-width="120px"
       >
-        <el-form-item label="商品编号">
-          <el-input v-model="editProForm.id" disabled></el-input>
-        </el-form-item>
         <el-form-item label="商品名称" prop="name">
-          <el-input v-model="editProForm.name" maxlength="30" show-word-limit></el-input>
+          <el-input v-model="addProForm.name" maxlength="30" show-word-limit></el-input>
         </el-form-item>
         <el-form-item label="商品规格" prop="spec">
-          <el-input v-model="editProForm.spec"></el-input>
+          <el-input v-model="addProForm.spec"></el-input>
         </el-form-item>
         <el-form-item label="商品价格" prop="price">
-          <el-input v-model="editProForm.price"></el-input>
+          <el-input v-model="addProForm.price"></el-input>
+        </el-form-item>
+        <el-form-item label="商品租赁量" prop="rentNum">
+          <el-input v-model="addProForm.rentNum"></el-input>
+        </el-form-item>
+        <el-form-item label="商品购买量" prop="purchases">
+          <el-input v-model="addProForm.purchases"></el-input>
+        </el-form-item>
+        <el-form-item label="商品UV浏览量" prop="uvNum">
+          <el-input v-model="addProForm.uvNum"></el-input>
         </el-form-item>
         <el-form-item label="商品标签" prop="tag">
-          <el-checkbox-group v-model="editProForm.tag">
+          <el-checkbox-group v-model="addProForm.tag">
             <el-checkbox
               v-for="item in tagList"
               :key="item.value"
@@ -157,14 +163,14 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="商品状态" prop="status">
-          <el-radio-group v-model="editProForm.status">
+          <el-radio-group v-model="addProForm.status">
             <el-radio :label="false">下架</el-radio>
             <el-radio :label="true">上架</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="text" @click="editProFormHandler">提 交</el-button>
+        <el-button type="text" @click="addProFormHandler">提 交</el-button>
       </span>
     </el-dialog>
     <!-- 编辑对话框 -->
@@ -222,6 +228,16 @@ export default {
       }
       callback();
     };
+    // 验证数量
+    let checkCount = (rule, value, callback) => {
+      if (!value){
+        return callback(new Error('请输入租赁量'))
+      }
+      if(!/^\d+$/.test(value)){
+        return callback(new Error('请输入整数'))
+      }
+      callback()
+    }
     return {
       tagList: [
         { label: "优惠", value: "discounts" },
@@ -574,6 +590,50 @@ export default {
       ],
       productList: [],
       addDialogVisible: false,
+      addProForm: {
+        id: 0,
+        name: '',
+        spec: '',
+        price: '',
+        rentNum: '0',
+        purchases: "0",
+        uvNum: "0",
+        tag: [],
+        status: false,
+        startTime: '',
+        updateTime: ''
+      },
+      addProFormRules: {
+        name: [
+          {required: true, message: '请输入商品名称', trigger: 'blur'},
+          {min: 1, max: 30, message: '长度在 1 到 30 个字符', trigger: 'blur'}
+        ],
+        spec: [{ required: true, message: "请输入商品规格", trigger: "blur" }],
+        price: [
+          { validator: checkPrice, trigger: "blur" },
+          { required: true, trigger: "blur" }
+        ],
+        rentNum: [
+          { validator: checkCount, trigger: "blur" },
+          { required: true, trigger: "blur" }
+        ],
+        purchases: [
+          { validator: checkCount, trigger: "blur" },
+          { required: true, trigger: "blur" }
+        ],
+        uvNum: [
+          { validator: checkCount, trigger: "blur" },
+          { required: true, trigger: "blur" }
+        ],
+        tag: [
+          {
+            type: "array",
+            required: true,
+            message: "请至少选择一个标签",
+            trigger: "change"
+          }
+        ]
+      },
       editDialogVisible: false,
       editProForm: {
         id: 0,
@@ -678,6 +738,34 @@ export default {
     proAdd(){
       this.addDialogVisible = true;
     },
+    // 点击新增商品对话框提交按钮发布商品
+    addProFormHandler(){
+      this.$refs.addProFormRef.validate(valid => {
+        if(valid){
+          let max = 1;
+          this.productList0.forEach(item => {
+            if(item.id > max){
+              max = item.id
+            }
+          })
+          this.addProForm.id = ++max;
+          this.addProForm.startTime = this.getDateTime();
+          this.addProForm.updateTime = '';
+          let p = {};
+          for(let key in this.addProForm){
+            p[key] = this.addProForm[key]
+          }
+          this.productList0.push(p);
+          this.$message.success('发布成功')
+          this.getProductList();
+          this.addDialogVisible = false;
+        }
+      })
+    },
+    // 关闭新增商品对话框清空表单
+    clearAddDialog(){
+      this.$refs.addProFormRef.resetFields();
+    },
     // 点击详情
     proDetail(id) {
       console.log(id, "详情");
@@ -704,20 +792,7 @@ export default {
     editProFormHandler() {
       this.$refs.editProFormRef.validate(valid => {
         if (valid) {
-          let now = new Date();
-          let y, M, d, h, m, s;
-          y = now.getFullYear();
-          M = now.getMonth() + 1;
-          M < 10 && (M = "0" + M);
-          d = now.getDate();
-          d < 10 && (d = "0" + d);
-          h = now.getHours();
-          h < 10 && (h = "0" + h);
-          m = now.getMinutes();
-          m < 10 && (m = "0" + m);
-          s = now.getSeconds();
-          s < 10 && (s = "0" + s);
-          let t = `${y}-${M}-${d} ${h}:${m}:${s}`;
+          let t = this.getDateTime();
           this.editProForm.updateTime = t;
           let {
             id,
@@ -743,6 +818,23 @@ export default {
           this.editDialogVisible = false;
         }
       });
+    },
+    // 获得当前时间格式
+    getDateTime(){
+      let now = new Date();
+      let y, M, d, h, m, s;
+      y = now.getFullYear();
+      M = now.getMonth() + 1;
+      M < 10 && (M = "0" + M);
+      d = now.getDate();
+      d < 10 && (d = "0" + d);
+      h = now.getHours();
+      h < 10 && (h = "0" + h);
+      m = now.getMinutes();
+      m < 10 && (m = "0" + m);
+      s = now.getSeconds();
+      s < 10 && (s = "0" + s);
+      return `${y}-${M}-${d} ${h}:${m}:${s}`;
     },
     // 删除商品
     proDelete(id) {
