@@ -1,0 +1,27 @@
+.el-switch .el-switch__label {
+    position: absolute;
+    display: none;
+    color: #fff;
+}
+/*打开时文字位置设置*/
+.el-switch .el-switch__label--right {
+    z-index: 1;
+    right: 6px;
+}
+/*关闭时文字位置设置*/
+.el-switch .el-switch__label--left {
+    z-index: 1;
+    left: 6px;
+}
+/*显示文字*/
+.el-switch .el-switch__label.is-active {
+    display: block;
+}
+.el-switch.el-switch .el-switch__core,
+.el-switch .el-switch__label {
+    width: 60px !important;
+}
+
+.el-pagination{
+    margin-top: 15px;
+}
