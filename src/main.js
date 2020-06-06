@@ -13,6 +13,7 @@ import {
   Col,
   Input,
   Image,
+  CheckboxGroup,
   Checkbox,
   Button,
   Message,
@@ -29,7 +30,9 @@ import {
   Switch,
   Pagination,
   Dialog,
-  MessageBox
+  MessageBox,
+  RadioGroup,
+  Radio
 } from 'element-ui'
 
 import './assets/css/common.css'
@@ -51,6 +54,7 @@ Vue.use(Row)
 Vue.use(Col)
 Vue.use(Input)
 Vue.use(Image)
+Vue.use(CheckboxGroup)
 Vue.use(Checkbox)
 Vue.use(Button)
 Vue.use(Menu)
@@ -66,6 +70,9 @@ Vue.use(TableColumn)
 Vue.use(Switch)
 Vue.use(Pagination)
 Vue.use(Dialog)
+Vue.use(RadioGroup)
+Vue.use(Radio)
+
 
 
 Vue.prototype.$message = Message;

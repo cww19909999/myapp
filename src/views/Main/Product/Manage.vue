@@ -71,7 +71,7 @@
             </el-row>
           </el-col>
           <el-col :span="8">
-            <el-button type="primary" icon="el-icon-plus">新增商品</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="proAdd">新增商品</el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -127,23 +127,101 @@
         background
       ></el-pagination>
     </el-card>
-    <!-- 删除对话框 -->
-    <!-- <el-dialog
-      title="提示"
-      :visible.sync="deleteDialogVisible"
-      width="30%"
-      modal>
-      <span>确认删除{{deleteName}}</span>
+    <!-- 新增商品对话框 -->
+    <el-dialog title="新增商品" :visible.sync="addDialogVisible" width="50%" modal>
+      <el-form
+        ref="editProFormRef"
+        :model="editProForm"
+        :rules="editProFormRules"
+        label-width="80px"
+      >
+        <el-form-item label="商品编号">
+          <el-input v-model="editProForm.id" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="商品名称" prop="name">
+          <el-input v-model="editProForm.name" maxlength="30" show-word-limit></el-input>
+        </el-form-item>
+        <el-form-item label="商品规格" prop="spec">
+          <el-input v-model="editProForm.spec"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格" prop="price">
+          <el-input v-model="editProForm.price"></el-input>
+        </el-form-item>
+        <el-form-item label="商品标签" prop="tag">
+          <el-checkbox-group v-model="editProForm.tag">
+            <el-checkbox
+              v-for="item in tagList"
+              :key="item.value"
+              :label="item.value"
+            >{{ item.label}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="商品状态" prop="status">
+          <el-radio-group v-model="editProForm.status">
+            <el-radio :label="false">下架</el-radio>
+            <el-radio :label="true">上架</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="text" @click="deleteDialogVisible = false">取 消</el-button>
-        <el-button type="text" @click="deleteDialogVisible = false">确 定</el-button>
+        <el-button type="text" @click="editProFormHandler">提 交</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
+    <!-- 编辑对话框 -->
+    <el-dialog title="编辑商品" :visible.sync="editDialogVisible" width="50%" modal>
+      <el-form
+        ref="editProFormRef"
+        :model="editProForm"
+        :rules="editProFormRules"
+        label-width="80px"
+      >
+        <el-form-item label="商品编号">
+          <el-input v-model="editProForm.id" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="商品名称" prop="name">
+          <el-input v-model="editProForm.name" maxlength="30" show-word-limit></el-input>
+        </el-form-item>
+        <el-form-item label="商品规格" prop="spec">
+          <el-input v-model="editProForm.spec"></el-input>
+        </el-form-item>
+        <el-form-item label="商品价格" prop="price">
+          <el-input v-model="editProForm.price"></el-input>
+        </el-form-item>
+        <el-form-item label="商品标签" prop="tag">
+          <el-checkbox-group v-model="editProForm.tag">
+            <el-checkbox
+              v-for="item in tagList"
+              :key="item.value"
+              :label="item.value"
+            >{{ item.label}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="商品状态" prop="status">
+          <el-radio-group v-model="editProForm.status">
+            <el-radio :label="false">下架</el-radio>
+            <el-radio :label="true">上架</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="text" @click="editProFormHandler">提 交</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 export default {
   data() {
+    // 验证价格
+    let checkPrice = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("请输入价格"));
+      }
+      if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+        return callback(new Error("请输入整数或保留2位小数点的小数"));
+      }
+      callback();
+    };
     return {
       tagList: [
         { label: "优惠", value: "discounts" },
@@ -495,7 +573,36 @@ export default {
         }
       ],
       productList: [],
-      
+      addDialogVisible: false,
+      editDialogVisible: false,
+      editProForm: {
+        id: 0,
+        name: "",
+        spec: "",
+        price: "",
+        tag: [],
+        status: false,
+        updateTime: ""
+      },
+      editProFormRules: {
+        name: [
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+          { min: 1, max: 30, message: "长度在 1 到 30 个字符", trigger: "blur" }
+        ],
+        spec: [{ required: true, message: "请输入商品规格", trigger: "blur" }],
+        price: [
+          { validator: checkPrice, trigger: "blur" },
+          { required: true, trigger: "blur" }
+        ],
+        tag: [
+          {
+            type: "array",
+            required: true,
+            message: "请至少选择一个标签",
+            trigger: "change"
+          }
+        ]
+      }
     };
   },
   created() {
@@ -506,34 +613,36 @@ export default {
     getProductList() {
       let { pname, pspec, plabel, startTime, endTime } = this.searchProForm;
       let proList1 = [];
-      if(pname === '') proList1 = this.productList0
-      else{
-        for (let product of this.productList0){
+      if (pname === "") proList1 = this.productList0;
+      else {
+        for (let product of this.productList0) {
           if (product.name.indexOf(pname) !== -1) proList1.push(product);
         }
       }
       let proList2 = [];
-      if(pspec === '') proList2 = proList1
-      else{
-        for (let product of proList1){
+      if (pspec === "") proList2 = proList1;
+      else {
+        for (let product of proList1) {
           if (product.spec.indexOf(pspec) !== -1) proList2.push(product);
         }
       }
       let proList3 = [];
-      if(plabel === '') proList3 = proList2;
-      else{
-        for (let product of proList2){
+      if (plabel === "") proList3 = proList2;
+      else {
+        for (let product of proList2) {
           if (product.tag.indexOf(plabel) !== -1) proList3.push(product);
         }
       }
       let proList4 = [];
-      if (startTime === "" || endTime === "") proList4 = proList3
-      else{
-        for (let product of proList3){
+      if (startTime === "" || endTime === "") proList4 = proList3;
+      else {
+        for (let product of proList3) {
           if (
-            new Date(startTime).getTime() <= new Date(product.startTime).getTime() &&
+            new Date(startTime).getTime() <=
+              new Date(product.startTime).getTime() &&
             new Date(endTime).getTime() >= new Date(product.startTime).getTime()
-          ) proList4.push(product);
+          )
+            proList4.push(product);
         }
       }
       let result = [];
@@ -565,32 +674,96 @@ export default {
       this.searchProForm.pageNum = newNum;
       this.getProductList();
     },
+    // 点击新增商品按钮
+    proAdd(){
+      this.addDialogVisible = true;
+    },
+    // 点击详情
     proDetail(id) {
       console.log(id, "详情");
     },
+    // 点击编辑按钮弹出编辑商品对话框
     proEdit(id) {
-      console.log(id, "编辑");
+      // 根据id获得商品参数显示在表单中
+      this.productList0.forEach(item => {
+        if (item.id === id) {
+          let { id, name, spec, price, tag, status } = item;
+          this.editProForm.id = id;
+          this.editProForm.name = name;
+          this.editProForm.spec = spec;
+          this.editProForm.price = price;
+          this.editProForm.tag = tag;
+          this.editProForm.status = status;
+          return false;
+        }
+      });
+      this.editDialogVisible = true;
+    },
+
+    // 点击编辑商品对话框的提交按钮
+    editProFormHandler() {
+      this.$refs.editProFormRef.validate(valid => {
+        if (valid) {
+          let now = new Date();
+          let y, M, d, h, m, s;
+          y = now.getFullYear();
+          M = now.getMonth() + 1;
+          M < 10 && (M = "0" + M);
+          d = now.getDate();
+          d < 10 && (d = "0" + d);
+          h = now.getHours();
+          h < 10 && (h = "0" + h);
+          m = now.getMinutes();
+          m < 10 && (m = "0" + m);
+          s = now.getSeconds();
+          s < 10 && (s = "0" + s);
+          let t = `${y}-${M}-${d} ${h}:${m}:${s}`;
+          this.editProForm.updateTime = t;
+          let {
+            id,
+            name,
+            spec,
+            price,
+            tag,
+            status,
+            updateTime
+          } = this.editProForm;
+          for (let product of this.productList0) {
+            if (product.id === id) {
+              product.name = name;
+              product.spec = spec;
+              product.price = price;
+              product.tag = tag;
+              product.status = status;
+              product.updateTime = updateTime;
+            }
+          }
+          this.$message.success("编辑成功");
+          this.getProductList();
+          this.editDialogVisible = false;
+        }
+      });
     },
     // 删除商品
     proDelete(id) {
       //根据id重新发起请求获取商品名称
       this.productList0.forEach((item, i) => {
-        if(item.id == id){
-          this.$confirm(`确认删除"${item.name}"`, '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(res => {
-            this.productList0.splice(i, 1);
-            this.getProductList();
-            this.$message.success('删除成功')
-          }).catch(err => this.$message.info('已取消删除'))
+        if (item.id == id) {
+          this.$confirm(`确认删除"${item.name}"`, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          })
+            .then(res => {
+              this.productList0.splice(i, 1);
+              this.getProductList();
+              this.$message.success("删除成功");
+            })
+            .catch(err => this.$message.info("已取消删除"));
           return false; //退出循环
         }
-      })
-    },
-    
-    
+      });
+    }
   },
   filters: {
     tagFilter(val) {
@@ -604,7 +777,7 @@ export default {
         case "recommend":
           return "推荐";
           break;
-        default: 
+        default:
           return "热卖";
           break;
       }
