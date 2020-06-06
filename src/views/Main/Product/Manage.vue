@@ -79,8 +79,12 @@
       <el-divider></el-divider>
       <!-- 商品列表 -->
       <el-table :data="productList" border style="width: 100%">
-        <el-table-column prop="name" label="商品名称" align="center"></el-table-column>
-        <el-table-column prop="price" label="商品价格" align="center"></el-table-column>
+        <el-table-column prop="name" label="商品名称" align="center" :show-overflow-tooltip="true"></el-table-column>
+        <el-table-column prop="price" label="商品价格" align="center">
+          <template v-slot="scope">
+            <span>{{scope.row.price + '元'}}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="rentNum" label="租赁量" align="center"></el-table-column>
         <el-table-column prop="purchases" label="购买量" align="center"></el-table-column>
         <el-table-column prop="uvNum" label="UV浏览量" align="center"></el-table-column>
@@ -123,6 +127,18 @@
         background
       ></el-pagination>
     </el-card>
+    <!-- 删除对话框 -->
+    <!-- <el-dialog
+      title="提示"
+      :visible.sync="deleteDialogVisible"
+      width="30%"
+      modal>
+      <span>确认删除{{deleteName}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="text" @click="deleteDialogVisible = false">取 消</el-button>
+        <el-button type="text" @click="deleteDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog> -->
   </div>
 </template>
 <script>
@@ -167,7 +183,7 @@ export default {
       productList0: [
         {
           id: 1,
-          name: "苹果11",
+          name: "苹果11456456456456456",
           spec: "a",
           price: "6799",
           rentNum: "12",
@@ -478,13 +494,15 @@ export default {
           updateTime: "2019-12-16 10:00:00"
         }
       ],
-      productList: []
+      productList: [],
+      
     };
   },
   created() {
     this.getProductList();
   },
   methods: {
+    // 获取商品列表
     getProductList() {
       let { pname, pspec, plabel, startTime, endTime } = this.searchProForm;
       let proList1 = [];
@@ -529,11 +547,23 @@ export default {
       this.productList = result;
       this.total = proList4.length;
     },
+    // 点击搜索按钮搜索商品列表
     searchProducts() {
       this.getProductList();
     },
+    // 重置搜索框
     resetSearchForm() {
       this.$refs.searchProForm.resetFields();
+    },
+    // 更改页大小
+    handleSizeChange(newSize) {
+      this.searchProForm.pageSize = newSize;
+      this.getProductList();
+    },
+    // 更改页码
+    handleCurrentChange(newNum) {
+      this.searchProForm.pageNum = newNum;
+      this.getProductList();
     },
     proDetail(id) {
       console.log(id, "详情");
@@ -541,17 +571,26 @@ export default {
     proEdit(id) {
       console.log(id, "编辑");
     },
+    // 删除商品
     proDelete(id) {
-      console.log(id, "删除");
+      //根据id重新发起请求获取商品名称
+      this.productList0.forEach((item, i) => {
+        if(item.id == id){
+          this.$confirm(`确认删除"${item.name}"`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(res => {
+            this.productList0.splice(i, 1);
+            this.getProductList();
+            this.$message.success('删除成功')
+          }).catch(err => this.$message.info('已取消删除'))
+          return false; //退出循环
+        }
+      })
     },
-    handleSizeChange(newSize) {
-      this.searchProForm.pageSize = newSize;
-      this.getProductList();
-    },
-    handleCurrentChange(newNum) {
-      this.searchProForm.pageNum = newNum;
-      this.getProductList();
-    }
+    
+    
   },
   filters: {
     tagFilter(val) {
