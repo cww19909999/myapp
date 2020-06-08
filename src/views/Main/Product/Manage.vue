@@ -120,7 +120,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="searchProForm.pageNum"
-        :page-sizes="[1, 2, 4, 8]"
+        :page-sizes="[2, 4, 6, 8]"
         :page-size="searchProForm.pageSize"
         layout="prev, pager, next, jumper, -> , total, sizes"
         :total="total"
@@ -251,7 +251,7 @@ export default {
         plabel: "",
         startTime: "",
         endTime: "",
-        pageSize: 1,
+        pageSize: 2,
         pageNum: 1
       },
       total: 11,
@@ -666,6 +666,8 @@ export default {
     };
   },
   created() {
+    sessionStorage.getItem('pageSize') && (this.searchProForm.pageSize = parseInt(sessionStorage.getItem('pageSize')));
+    sessionStorage.getItem('pageNum') && (this.searchProForm.pageNum = parseInt(sessionStorage.getItem('pageNum')));
     this.getProductList();
   },
   methods: {
@@ -727,11 +729,13 @@ export default {
     // 更改页大小
     handleSizeChange(newSize) {
       this.searchProForm.pageSize = newSize;
+      sessionStorage.setItem('pageSize', newSize);
       this.getProductList();
     },
     // 更改页码
     handleCurrentChange(newNum) {
       this.searchProForm.pageNum = newNum;
+      sessionStorage.setItem('pageNum', newNum);
       this.getProductList();
     },
     // 点击新增商品按钮
@@ -766,9 +770,10 @@ export default {
     clearAddDialog(){
       this.$refs.addProFormRef.resetFields();
     },
-    // 点击详情
+    // 点击详情按钮更改子标题并跳转到商品详情组件
     proDetail(id) {
-      console.log(id, "详情");
+      this.$emit('changeSubRoute', '商品详情')
+      this.$router.push(`/prodetail/${id}`);
     },
     // 点击编辑按钮弹出编辑商品对话框
     proEdit(id) {

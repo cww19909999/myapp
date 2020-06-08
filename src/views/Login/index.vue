@@ -70,7 +70,9 @@ export default {
   },
   created() {
     // 判断有没有cookie
-    this.getCookie()
+    this.$nextTick(() => {
+      this.getCookie()
+    })
   },
   methods: {
     login() {

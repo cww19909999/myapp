@@ -42,9 +42,12 @@
           <i :class="iconCollapse" @click="toggleCollapse"></i>
           <i class="el-icon-refresh-left" @click="reloadPage"></i>
         </div>
-        <div class="header-right">
+        <div class="header-center">
           <span>{{ uname }}</span>
           <i class="el-icon-caret-bottom"></i>
+        </div>
+        <div class="header-right">
+          <el-button type="info" @click="logout">退出</el-button>
         </div>
       </el-header>
       <!-- 主体内容 -->
@@ -54,14 +57,15 @@
             <i class="el-icon-d-arrow-left" @click="goback"></i>
           </p>
           <p>
-            <i class="el-icon-s-home"></i>
+            <i class="el-icon-s-home"  @click="gomain"></i>
           </p>
           <p>
             <span>{{ subRoute }}</span>
+            <i class="el-icon-close" @click="goback"></i>
           </p>
         </div>
         <div class="routerview-wrapper">
-          <router-view v-if="isRouterAlive" />
+          <router-view v-if="isRouterAlive" @changeSubRoute="changeSubRouteHandler"/>
         </div>
       </el-main>
     </el-container>
@@ -113,7 +117,8 @@ export default {
       menuCollapse: false,
       iconCollapse: "el-icon-s-fold",
       defaultActive: "/statistical",
-      subRoute: ""
+      subRoute: "",
+      timeOut: null
     };
   },
   created() {
@@ -137,6 +142,10 @@ export default {
         this.isRouterAlive = true;
       });
     },
+    // 退出登录
+    logout(){
+      this.$router.push('login');
+    },
     // 点击导航栏选项
     checkActive(activePath, subText) {
       this.defaultActive = activePath;
@@ -145,6 +154,20 @@ export default {
     // 点击返回按钮
     goback() {
       this.$router.back();
+    },
+    // 点击回去main路由
+    gomain(){
+      if(this.timeOut) clearTimeout(this.timeOut)
+      this.timeOut = setTimeout(() => {
+        this.$router.push('/main').catch(err => {
+          this.$message.warning('已在主页面')
+          this.timeOut = null
+        })
+      }, 300)
+    },
+    // 接受子组件详情按钮的参数
+    changeSubRouteHandler(subRoute){
+      this.subRoute = subRoute
     }
   },
   watch: {
@@ -153,7 +176,7 @@ export default {
       sessionStorage.setItem("activePath", newVal);
     },
     // 监听导航栏高亮标题
-    subRoute(newVal, oldVal) {
+    subRoute(newVal,  oldVal) {
       sessionStorage.setItem("subRoute", newVal);
     },
     // 监听路由变化导航栏高亮变化
@@ -169,6 +192,10 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     sessionStorage.removeItem("uname");
+    sessionStorage.removeItem('pageSize');
+    sessionStorage.removeItem('pageNum');
+    sessionStorage.removeItem('activePath');
+    sessionStorage.removeItem('subRoute');
     next();
   }
 };
@@ -200,14 +227,14 @@ export default {
   color: #5e5d5d;
 
   .header-left {
-    width: 200px;
+    // width: 200px;
     > i {
-      margin-right: 20px;
+      margin: 10px;
       font-size: 1.5em;
       cursor: pointer;
     }
   }
-  .header-right {
+  .header-center {
     flex: auto;
     text-align: center;
     > span,
@@ -216,6 +243,11 @@ export default {
     }
     > i {
       color: #fff;
+    }
+  }
+  .header-right{
+    .el-button{
+      margin: 10px;
     }
   }
 }
@@ -238,10 +270,7 @@ export default {
     i {
       padding: 8px;
       font-size: 1.5rem;
-
-      &.el-icon-d-arrow-left {
-        cursor: pointer;
-      }
+      cursor: pointer;
     }
     span {
       padding: 5px;

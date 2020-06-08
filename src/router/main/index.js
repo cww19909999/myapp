@@ -23,6 +23,12 @@ export default{
             component: () => import('@/views/Main/Product/Category')
         },
         {
+            path: '/prodetail/:id',
+            // name: 'Prodetail',
+            component: () => import('@/views/Main/Product/Detail'),
+            props: true
+        },
+        {
             path: '/usermanage',
             // name: 'Procategory',
             component: () => import('@/views/Main/User/UserControl')
