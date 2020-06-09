@@ -759,7 +759,7 @@ export default {
           for(let key in this.addProForm){
             p[key] = this.addProForm[key]
           }
-          this.productList0.push(p);
+          this.productList0.unshift(p);
           this.$message.success('发布成功')
           this.getProductList();
           this.addDialogVisible = false;
