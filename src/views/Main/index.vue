@@ -47,7 +47,7 @@
           <i class="el-icon-caret-bottom"></i>
         </div>
         <div class="header-right">
-          <el-button type="info" @click="logout">退出</el-button>
+          <el-button type="danger" @click="logout">退出</el-button>
         </div>
       </el-header>
       <!-- 主体内容 -->

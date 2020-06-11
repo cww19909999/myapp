@@ -844,7 +844,7 @@ export default {
     // 删除商品
     proDelete(id) {
       //根据id重新发起请求获取商品名称
-      this.productList0.forEach((item, i) => {
+      this.productList0.forEach((item, i, arr) => {
         if (item.id == id) {
           this.$confirm(`确认删除"${item.name}"`, "提示", {
             confirmButtonText: "确定",
@@ -852,7 +852,7 @@ export default {
             type: "warning"
           })
             .then(res => {
-              this.productList0.splice(i, 1);
+              arr.splice(i, 1);
               this.getProductList();
               this.$message.success("删除成功");
             })

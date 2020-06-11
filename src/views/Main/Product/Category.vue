@@ -179,7 +179,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.categoryList0.forEach((item, index) => {
+          this.categoryList0.forEach((item, index, arr) => {
             if (item.id === id) this.categoryList0.splice(index, 1);
           });
           this.getCategoryList();
@@ -194,7 +194,12 @@ export default {
     },
     // 编辑商品分类
     editCategory(id) {
-        this.editCategoryForm.id = id
+        this.categoryList.forEach(item => {
+          if(item.id === id){
+            this.editCategoryForm.id = id
+            this.editCategoryForm.category = item.category;
+          }
+        })
         this.editDialogVisible = true;
         this.$nextTick(() =>{
             this.$refs.editCategory.$refs.input.focus()
@@ -224,7 +229,5 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.el-table {
-  margin-top: 15px;
-}
+
 </style>
