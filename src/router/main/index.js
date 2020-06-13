@@ -30,13 +30,18 @@ export default{
         },
         {
             path: '/usermanage',
-            // name: 'Procategory',
+            // name: 'Usermanage',
             component: () => import('@/views/Main/User/UserControl')
         },
         {
             path: '/suppliermanage',
-            // name: 'Procategory',
+            // name: 'Suppliermanage',
             component: () => import('@/views/Main/User/Supplier')
+        },
+        {
+            path: '/addsupplier',
+            // name: 'Addsupplier',
+            component: () => import('@/views/Main/User/AddSupplier')
         },
         {
             path: '/adminmanage',

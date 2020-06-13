@@ -78,7 +78,12 @@
       <!-- 分割线 -->
       <el-divider></el-divider>
       <!-- 商品列表 -->
-      <el-table :data="productList" border style="width: 100%" :default-sort="{prop: 'startTime', order: 'ascending'}">
+      <el-table
+        :data="productList"
+        border
+        style="width: 100%"
+        :default-sort="{prop: 'startTime', order: 'ascending'}"
+      >
         <el-table-column prop="name" label="商品名称" align="center" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column prop="price" label="商品价格" align="center">
           <template v-slot="scope">
@@ -102,6 +107,7 @@
               active-color="#13ce66"
               active-text="上架"
               inactive-text="下架"
+              @change="changeStatus(scope.row)"
             ></el-switch>
           </template>
         </el-table-column>
@@ -128,13 +134,14 @@
       ></el-pagination>
     </el-card>
     <!-- 新增商品对话框 -->
-    <el-dialog title="新增商品" :visible.sync="addDialogVisible" width="50%" modal @closed="clearAddDialog">
-      <el-form
-        ref="addProFormRef"
-        :model="addProForm"
-        :rules="addProFormRules"
-        label-width="120px"
-      >
+    <el-dialog
+      title="新增商品"
+      :visible.sync="addDialogVisible"
+      width="50%"
+      modal
+      @closed="clearAddDialog"
+    >
+      <el-form ref="addProFormRef" :model="addProForm" :rules="addProFormRules" label-width="120px">
         <el-form-item label="商品名称" prop="name">
           <el-input v-model="addProForm.name" maxlength="30" show-word-limit></el-input>
         </el-form-item>
@@ -230,14 +237,14 @@ export default {
     };
     // 验证数量
     let checkCount = (rule, value, callback) => {
-      if (!value){
-        return callback(new Error('请输入租赁量'))
+      if (!value) {
+        return callback(new Error("请输入租赁量"));
       }
-      if(!/^\d+$/.test(value)){
-        return callback(new Error('请输入整数'))
+      if (!/^\d+$/.test(value)) {
+        return callback(new Error("请输入整数"));
       }
-      callback()
-    }
+      callback();
+    };
     return {
       tagList: [
         { label: "优惠", value: "discounts" },
@@ -592,21 +599,21 @@ export default {
       addDialogVisible: false,
       addProForm: {
         id: 0,
-        name: '',
-        spec: '',
-        price: '',
-        rentNum: '0',
+        name: "",
+        spec: "",
+        price: "",
+        rentNum: "0",
         purchases: "0",
         uvNum: "0",
         tag: [],
         status: false,
-        startTime: '',
-        updateTime: ''
+        startTime: "",
+        updateTime: ""
       },
       addProFormRules: {
         name: [
-          {required: true, message: '请输入商品名称', trigger: 'blur'},
-          {min: 1, max: 30, message: '长度在 1 到 30 个字符', trigger: 'blur'}
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+          { min: 1, max: 30, message: "长度在 1 到 30 个字符", trigger: "blur" }
         ],
         spec: [{ required: true, message: "请输入商品规格", trigger: "blur" }],
         price: [
@@ -666,8 +673,14 @@ export default {
     };
   },
   created() {
-    sessionStorage.getItem('pageSize') && (this.searchProForm.pageSize = parseInt(sessionStorage.getItem('pageSize')));
-    sessionStorage.getItem('pageNum') && (this.searchProForm.pageNum = parseInt(sessionStorage.getItem('pageNum')));
+    sessionStorage.getItem("pageSize") &&
+      (this.searchProForm.pageSize = parseInt(
+        sessionStorage.getItem("pageSize")
+      ));
+    sessionStorage.getItem("pageNum") &&
+      (this.searchProForm.pageNum = parseInt(
+        sessionStorage.getItem("pageNum")
+      ));
     this.getProductList();
   },
   methods: {
@@ -729,50 +742,66 @@ export default {
     // 更改页大小
     handleSizeChange(newSize) {
       this.searchProForm.pageSize = newSize;
-      sessionStorage.setItem('pageSize', newSize);
+      sessionStorage.setItem("pageSize", newSize);
       this.getProductList();
     },
     // 更改页码
     handleCurrentChange(newNum) {
       this.searchProForm.pageNum = newNum;
-      sessionStorage.setItem('pageNum', newNum);
+      sessionStorage.setItem("pageNum", newNum);
       this.getProductList();
     },
+    // 修改商品的状态
+    changeStatus(product) {
+      let { id, status } = product;
+      let flag = true;
+      this.productList0.forEach(item => {
+        if (item.id === id) {
+          item.status = status;
+          this.$message.success("修改成功");
+          flag = false;
+        }
+      });
+      if (flag) {
+        product.status = !product.status;
+        this.$message.error('修改失败')
+      }
+    },
     // 点击新增商品按钮
-    proAdd(){
+    proAdd() {
       this.addDialogVisible = true;
     },
     // 点击新增商品对话框提交按钮发布商品
-    addProFormHandler(){
+    addProFormHandler() {
       this.$refs.addProFormRef.validate(valid => {
-        if(valid){
+        if (valid) {
           let max = 1;
           this.productList0.forEach(item => {
-            if(item.id > max){
-              max = item.id
+            if (item.id > max) {
+              max = item.id;
             }
-          })
+          });
           this.addProForm.id = ++max;
           this.addProForm.startTime = this.getDateTime();
-          this.addProForm.updateTime = '';
+          this.addProForm.updateTime = "";
           let p = {};
-          for(let key in this.addProForm){
-            p[key] = this.addProForm[key]
+          for (let key in this.addProForm) {
+            p[key] = this.addProForm[key];
           }
           this.productList0.unshift(p);
-          this.$message.success('发布成功')
+          this.$message.success("发布成功");
           this.getProductList();
           this.addDialogVisible = false;
         }
-      })
+      });
     },
     // 关闭新增商品对话框清空表单
-    clearAddDialog(){
+    clearAddDialog() {
       this.$refs.addProFormRef.resetFields();
     },
     // 点击详情按钮更改子标题并跳转到商品详情组件
     proDetail(id) {
-      this.$emit('changeSubRoute', '商品详情')
+      this.$emit("changeSubRoute", "商品详情");
       this.$router.push(`/prodetail/${id}`);
     },
     // 点击编辑按钮弹出编辑商品对话框
@@ -825,7 +854,7 @@ export default {
       });
     },
     // 获得当前时间格式
-    getDateTime(){
+    getDateTime() {
       let now = new Date();
       let y, M, d, h, m, s;
       y = now.getFullYear();

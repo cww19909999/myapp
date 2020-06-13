@@ -81,9 +81,6 @@ export default {
     return {};
   },
   props: ["id"],
-  methods: {
-      
-  },
   computed: {
     getProduct() {
       return this.$store.state.product;
