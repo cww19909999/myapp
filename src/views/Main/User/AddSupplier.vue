@@ -5,8 +5,7 @@
       :model="addSupplierForm"
       :rules="addSupplierFormRules"
       ref="addSupplierFormRef"
-      label-width="100px"
-      hide-required-asterisk
+      label-width="110px"
     >
       <el-form-item label="供应商名称：" prop="supplier">
         <el-input v-model="addSupplierForm.supplier" style="width:600px"></el-input>
@@ -38,14 +37,39 @@
         ></el-switch>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary" @click="submitAddSupplier">提交</el-button>
       </el-form-item>
     </el-form>
   </el-card>
 </template>
 <script>
+import bus from '@/assets/js/bus'
 export default {
   data() {
+    // 账号验证
+    let validateAccount = (rule, value, callback) => {
+      let reg = /^[a-zA-Z\d]{1,10}$/;
+      if (!reg.test(value)){
+        return callback(new Error("必须由字母和数字组成，长度在 1 到 10 个字符"));
+      }
+      callback();
+    };
+    // 密码验证
+    let validatePassword = (rule, value, callback) => {
+      let reg = /^(?![a-zA-Z]+$)(?!\d+$)[a-zA-Z\d]{6,8}$/;
+      if (!reg.test(value)){
+        return callback(new Error("密码必须包含字母和数字，长度在 6 到 8 个字符"));
+      }
+      else callback();
+    };
+    // 手机验证
+    let validetePhone = (rule, value, callback) => {
+      let reg = /^1[3456789]\d{9}$/;
+      if (!reg.test(value)){
+        return callback(new Error("请输入正确手机号码"));
+      } 
+      callback();
+    };
     return {
       addSupplierForm: {
         supplier: "",
@@ -57,14 +81,46 @@ export default {
         remark: "",
         status: true
       },
-      addSupplierFormRules: {},
-    
-    }
+      addSupplierFormRules: {
+        supplier: [
+          { required: true, message: "请输入供应商", trigger: "blur" },
+          {
+            min: 1,
+            max: 10,
+            message: "长度在 1 到 10 个字符之间",
+            trigger: "blur"
+          }
+        ],
+        account: [
+          { required: true, message: "请输入账号", trigger: "blur" },
+          { validator: validateAccount, trigger: "blur" }
+        ],
+        password: [
+          { required: true, message: "密码不能为空", trigger: "blur" },
+          { validator: validatePassword, trigger: "blur" }
+        ],
+        address: [{ required: true, message: "地址不能为空", trigger: "blur" }],
+        linkman: [
+          { required: true, message: "联系人不能为空", trigger: "blur" }
+        ],
+        phone: [
+          { required: true, message: "手机不能为空", trigger: "blur" },
+          { validator: validetePhone, trigger: "blur" }
+        ]
+      }
+    };
   },
-
-  
-
-}
+  methods: {
+    submitAddSupplier() {
+      this.$refs.addSupplierFormRef.validate(valid => {
+        // if(valid){
+          console.log('开始触发')
+          bus.$emit('addSupplierForm', this.addSupplierForm)
+        // }
+      })
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>
@@ -73,8 +129,5 @@ export default {
 }
 .el-switch /deep/ .el-switch__label--left {
   left: 20px;
-}
-.el-form /deep/ .el-form-item{
-    margin-bottom: 6px;
 }
 </style>

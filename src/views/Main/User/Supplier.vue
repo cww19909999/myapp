@@ -71,78 +71,11 @@
   </div>
 </template>
 <script>
+import bus from '@/assets/js/bus'
 export default {
   data() {
     return {
-      supplierList0: [
-        {
-          id: "100001",
-          supplier: "京东",
-          accout: "jingdong",
-          password: "88888888",
-          linkman: "刘强东",
-          phone: "17718881999",
-          status: true,
-          createTime: "2019-12-4 14:27:13",
-          updateTime: "2019-12-14 15:10:05"
-        },
-        {
-          id: "100002",
-          supplier: "京西",
-          accout: "jingdong",
-          password: "88888888",
-          linkman: "刘强西",
-          phone: "17718881999",
-          status: false,
-          createTime: "2019-12-4 14:27:13",
-          updateTime: "2019-12-14 15:10:05"
-        },
-        {
-          id: "100003",
-          supplier: "京南",
-          accout: "jingdong",
-          password: "88888888",
-          linkman: "刘强南",
-          phone: "17718881999",
-          status: true,
-          createTime: "2019-12-4 14:27:13",
-          updateTime: "2019-12-14 15:10:05"
-        },
-        {
-          id: "100004",
-          supplier: "京北",
-          accout: "jingdong",
-          password: "88888888",
-          linkman: "刘强北",
-          phone: "17718881999",
-          status: false,
-          createTime: "2019-12-4 14:27:13",
-          updateTime: "2019-12-14 15:10:05"
-        },
-        {
-          id: "100005",
-          supplier: "京东",
-          accout: "jingdong",
-          password: "88888888",
-          linkman: "刘强中",
-          phone: "17718881999",
-          status: true,
-          createTime: "2019-12-4 14:27:13",
-          updateTime: "2019-12-14 15:10:05"
-        },
-        {
-          id: "100006",
-          supplier: "京东",
-          accout: "jingdong",
-          password: "88888888",
-          linkman: "刘强发",
-          phone: "17718881999",
-          status: false,
-          createTime: "2019-12-4 14:27:13",
-          updateTime: "2019-12-14 15:10:05"
-        }
-      ],
-      supplierList: [],
+      // supplierList: [],
       keyword: "",
       pageSize: 2,
       pageNum: 1,
@@ -152,18 +85,7 @@ export default {
   methods: {
     // 获取供应商列表
     getSupplierList(){
-      let start, end, result0, result = [];
-      result0 = this.supplierList0.filter(item => {
-        return item.supplier.indexOf(this.keyword) !== -1
-      })
-      this.totalNum = result0.length;
-      start = this.pageSize * (this.pageNum - 1);
-      end = start + this.pageSize;
-      end = end > this.totalNum ? this.totalNum : end;
-      for(let i = start; i < end; i++){
-        result.push(result0[i])
-      }
-      this.supplierList = result;
+      this.$store.commit('getSupplierList', {keyword: this.keyword, pageSize: this.pageSize, pageNum: this.pageNum})
     },
     // 更改页大小
     handleSizeChange(val) {
@@ -179,13 +101,13 @@ export default {
     changeStatus(supplier){
       let {id, status} = supplier;
       let flag = false;
-      this.supplierList0.forEach(item => {
-        if(item.id === id){
-            item.status = status;
-            flag = true;
-            this.$message.success('修改成功');
-        }
-      })
+      // this.supplierList0().forEach(item => {
+      //   if(item.id === id){
+      //       item.status = status;
+      //       flag = true;
+      //       this.$message.success('修改成功');
+      //   }
+      // })
       if(!flag){
         supplier.status = !supplier.status
         this.$message.error('修改失败')
@@ -204,10 +126,20 @@ export default {
     goSupplier(){
         this.$emit('changeSubRoute', '新增供应商')
         this.$router.push('/addsupplier')
-    }
+    },
+    // 接受添加供应商组件传来的参数添加到供应商列表中
+    // addSupplierFormHandler(data){
+    //   this.$store.commit('addSupplierForm',data)
+    // }
   },
   created(){
     this.getSupplierList()
+    // bus.$on('addSupplierForm', this.addSupplierFormHandler)
+  },
+  computed: {
+    supplierList(){
+      return this.$store.state.supplierList
+    }
   }
 };
 </script>

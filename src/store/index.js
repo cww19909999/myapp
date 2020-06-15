@@ -325,13 +325,108 @@ export default new Vuex.Store({
         updateTime: "2019-12-16 10:00:00"
       }
     ],
-    product: null
+    product: null,
+    supplierList0: [
+      {
+        id: "100001",
+        supplier: "京东",
+        accout: "jingdong",
+        password: "88888888",
+        linkman: "刘强东",
+        phone: "17718881999",
+        status: true,
+        createTime: "2019-12-4 14:27:13",
+        updateTime: "2019-12-14 15:10:05"
+      },
+      {
+        id: "100002",
+        supplier: "京西",
+        accout: "jingdong",
+        password: "88888888",
+        linkman: "刘强西",
+        phone: "17718881999",
+        status: false,
+        createTime: "2019-12-4 14:27:13",
+        updateTime: "2019-12-14 15:10:05"
+      },
+      {
+        id: "100003",
+        supplier: "京南",
+        accout: "jingdong",
+        password: "88888888",
+        linkman: "刘强南",
+        phone: "17718881999",
+        status: true,
+        createTime: "2019-12-4 14:27:13",
+        updateTime: "2019-12-14 15:10:05"
+      },
+      {
+        id: "100004",
+        supplier: "京北",
+        accout: "jingdong",
+        password: "88888888",
+        linkman: "刘强北",
+        phone: "17718881999",
+        status: false,
+        createTime: "2019-12-4 14:27:13",
+        updateTime: "2019-12-14 15:10:05"
+      },
+      {
+        id: "100005",
+        supplier: "京东",
+        accout: "jingdong",
+        password: "88888888",
+        linkman: "刘强中",
+        phone: "17718881999",
+        status: true,
+        createTime: "2019-12-4 14:27:13",
+        updateTime: "2019-12-14 15:10:05"
+      },
+      {
+        id: "100006",
+        supplier: "京东",
+        accout: "jingdong",
+        password: "88888888",
+        linkman: "刘强发",
+        phone: "17718881999",
+        status: false,
+        createTime: "2019-12-4 14:27:13",
+        updateTime: "2019-12-14 15:10:05"
+      }
+    ],
+    supplierList: []
   },
   mutations: {
+    // 根据id获取商品
     getProductById(state, id){
       state.productList0.forEach(item => {
         if(item.id == id) state.product = item
       })
+    },
+    // 根据条件获取供应商列表
+    getSupplierList(state, playload){
+      let {keyword, pageSize, pageNum} = playload;
+      let start, end, total, result0, result = [];
+      result0 = state.supplierList0.filter(item => {
+        return item.supplier.indexOf(keyword) !== -1
+      })
+      total = result0.length;
+      start = pageSize * (pageNum - 1);
+      end = start + pageSize;
+      end = end > total ? total : end;
+      for(let i = start; i < end; i++){
+        result.push(result0[i])
+      }
+      state.supplierList = result;
+    },
+    addSupplierForm(state, data){
+      let productList0 = state.productList0;
+      let max = 0;
+      productList0.forEach(item => {
+        if (item.id > max) max = parseInt(item.id)
+      })
+      data.id = ++max + '';
+      productList0.push(data)
     }
   },
   actions: {
