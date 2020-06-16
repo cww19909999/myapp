@@ -55,8 +55,8 @@
         <el-col :span="2">状态：</el-col>
         <el-col :span="15">
             <el-radio-group v-model="getProduct.status">
-                <el-radio :label="false">下架</el-radio>
-                <el-radio :label="true">上架</el-radio>
+                <el-radio :label="false" onclick="return false">下架</el-radio>
+                <el-radio :label="true" onclick="return false">上架</el-radio>
             </el-radio-group>
         </el-col>
       </el-row>

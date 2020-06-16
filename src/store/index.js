@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import {formatTime} from '@/assets/js/fun'
 
 Vue.use(Vuex)
 
@@ -11,6 +12,7 @@ export default new Vuex.Store({
       { label: "推荐", value: "recommend" },
       { label: "热卖", value: "hotsale" }
     ],
+
     productList0: [
       {
         id: 1,
@@ -326,11 +328,12 @@ export default new Vuex.Store({
       }
     ],
     product: null,
+
     supplierList0: [
       {
         id: "100001",
         supplier: "京东",
-        accout: "jingdong",
+        account: "jingdong",
         password: "88888888",
         linkman: "刘强东",
         phone: "17718881999",
@@ -341,7 +344,7 @@ export default new Vuex.Store({
       {
         id: "100002",
         supplier: "京西",
-        accout: "jingdong",
+        account: "jingdong",
         password: "88888888",
         linkman: "刘强西",
         phone: "17718881999",
@@ -352,7 +355,7 @@ export default new Vuex.Store({
       {
         id: "100003",
         supplier: "京南",
-        accout: "jingdong",
+        account: "jingdong",
         password: "88888888",
         linkman: "刘强南",
         phone: "17718881999",
@@ -363,7 +366,7 @@ export default new Vuex.Store({
       {
         id: "100004",
         supplier: "京北",
-        accout: "jingdong",
+        account: "jingdong",
         password: "88888888",
         linkman: "刘强北",
         phone: "17718881999",
@@ -374,7 +377,7 @@ export default new Vuex.Store({
       {
         id: "100005",
         supplier: "京东",
-        accout: "jingdong",
+        account: "jingdong",
         password: "88888888",
         linkman: "刘强中",
         phone: "17718881999",
@@ -385,7 +388,7 @@ export default new Vuex.Store({
       {
         id: "100006",
         supplier: "京东",
-        accout: "jingdong",
+        account: "jingdong",
         password: "88888888",
         linkman: "刘强发",
         phone: "17718881999",
@@ -394,7 +397,11 @@ export default new Vuex.Store({
         updateTime: "2019-12-14 15:10:05"
       }
     ],
-    supplierList: []
+    supplierList: [],
+    supplierListTotal: 0,
+    editSupplier: {},
+
+    detailSupplier: {}
   },
   mutations: {
     // 根据id获取商品
@@ -403,31 +410,84 @@ export default new Vuex.Store({
         if(item.id == id) state.product = item
       })
     },
-    // 根据条件获取供应商列表
+    // 根据搜索条件和分页条获取供应商列表
     getSupplierList(state, playload){
       let {keyword, pageSize, pageNum} = playload;
-      let start, end, total, result0, result = [];
+      let start, end, result0, result = [];
       result0 = state.supplierList0.filter(item => {
         return item.supplier.indexOf(keyword) !== -1
       })
-      total = result0.length;
+      state.supplierListTotal = result0.length;
       start = pageSize * (pageNum - 1);
       end = start + pageSize;
-      end = end > total ? total : end;
+      end = end > state.supplierListTotal ? state.supplierListTotal : end;
       for(let i = start; i < end; i++){
         result.push(result0[i])
       }
       state.supplierList = result;
     },
-    addSupplierForm(state, data){
-      let productList0 = state.productList0;
+    // 添加供应商提交按钮添加供应商
+    addSupplierForm(state, playload){
+      let supplierList0 = state.supplierList0;
       let max = 0;
-      productList0.forEach(item => {
+      supplierList0.forEach(item => {
         if (item.id > max) max = parseInt(item.id)
       })
-      data.id = ++max + '';
-      productList0.push(data)
+      playload.id = ++max + '';
+      playload.createTime = formatTime();
+      let obj = {}
+      for(let key in playload){
+        obj[key] = playload[key]
+      }
+      supplierList0.push(obj)
+    },
+    // 修改供应商的状态
+    changeStatus(state, playload){
+      state.supplierList0.forEach(item => {
+        if(item.id == playload.id) item.status = playload.status
+      })
+    },
+    // 根据id删除供应商
+    deleteSupplier(state, id){
+      state.supplierList0.forEach((item, i) => {
+        console.log(item.id, id)
+        if(item.id == id){
+          state.supplierList0.splice(i, 1)
+        }
+      })
+    },
+    // 根据id获取供应商给到编辑供应商组件
+    getSupplierById(state, id){
+      state.supplierList0.forEach(item => {
+        if(item.id == id) {
+            state.editSupplier = item
+        }
+      })
+    },
+    // 根据id编辑供应商信息
+    editSupplierById(state){
+      state.supplierList0.forEach(item => {
+        if(item.id == state.editSupplier.id){
+          item.supplier = state.editSupplier.supplier
+          item.account = state.editSupplier.account
+          item.password = state.editSupplier.password
+          item.address = state.editSupplier.address
+          item.linkman = state.editSupplier.linkman
+          item.phone = state.editSupplier.phone
+          item.status = state.editSupplier.status
+          item.updateTime = formatTime()
+        }
+      })
+    },
+    // 根据id获取供应商给到详情组件
+    getSupplierByIdDetail(state, id){
+      state.supplierList0.forEach(item => {
+        if(item.id == id){
+          state.detailSupplier = item
+        }
+      })
     }
+    
   },
   actions: {
   },

@@ -44,6 +44,18 @@ export default{
             component: () => import('@/views/Main/User/AddSupplier')
         },
         {
+            path: '/editsupplier/:id',
+            // name: 'Editsupplier',
+            component: () => import('@/views/Main/User/EditSupplier'),
+            props: true
+        },
+        {
+            path: '/detailsupplier/:id',
+            // name: 'Detailsupplier',
+            component: () => import('@/views/Main/User/DetailSupplier'),
+            props: true
+        },
+        {
             path: '/adminmanage',
             // name: 'Procategory',
             component: () => import('@/views/Main/User/Admins')

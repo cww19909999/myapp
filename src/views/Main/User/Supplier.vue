@@ -27,7 +27,7 @@
       <!-- 列表 -->
       <el-table :data="supplierList" stripe border style="width: 100%" height="400">
         <el-table-column prop="supplier" label="供应商名称" align="center"></el-table-column>
-        <el-table-column prop="accout" label="登录账号" align="center"></el-table-column>
+        <el-table-column prop="account" label="登录账号" align="center"></el-table-column>
         <el-table-column prop="password" label="登录密码" align="center">
           <template v-slot="scope">
             <span>{{scope.row.password.replace(/./g, '*')}}</span>
@@ -49,10 +49,15 @@
         <el-table-column prop="createTime" label="创建时间" width="100" align="center"></el-table-column>
         <el-table-column prop="updateTime" label="更新时间" width="100" align="center"></el-table-column>
         <el-table-column label="操作" width="210" align="center">
-          <template v-slot="spoce">
-            <el-button type="primary" size="mini">详情</el-button>
-            <el-button type="primary" size="mini">编辑</el-button>
-            <el-button type="danger" size="mini" :disabled="!spoce.row.status">删除</el-button>
+          <template v-slot="scope">
+            <el-button type="primary" size="mini" @click="goDetailSupplier(scope.row.id)">详情</el-button>
+            <el-button type="primary" size="mini" @click="goEditSupplier(scope.row.id)">编辑</el-button>
+            <el-button
+              type="danger"
+              size="mini"
+              :disabled="!scope.row.status"
+              @click="deleteSupplier(scope.row)"
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,11 +76,10 @@
   </div>
 </template>
 <script>
-import bus from '@/assets/js/bus'
+import bus from "@/assets/js/bus";
 export default {
   data() {
     return {
-      // supplierList: [],
       keyword: "",
       pageSize: 2,
       pageNum: 1,
@@ -84,8 +88,12 @@ export default {
   },
   methods: {
     // 获取供应商列表
-    getSupplierList(){
-      this.$store.commit('getSupplierList', {keyword: this.keyword, pageSize: this.pageSize, pageNum: this.pageNum})
+    getSupplierList() {
+      this.$store.commit("getSupplierList", {
+        keyword: this.keyword,
+        pageSize: this.pageSize,
+        pageNum: this.pageNum
+      });
     },
     // 更改页大小
     handleSizeChange(val) {
@@ -94,51 +102,72 @@ export default {
     },
     // 更改页码
     handleCurrentChange(val) {
-      this.pageNum = val
-      this.getSupplierList()
+      this.pageNum = val;
+      this.getSupplierList();
     },
     // 监听供应商状态改变事件
-    changeStatus(supplier){
-      let {id, status} = supplier;
-      let flag = false;
-      // this.supplierList0().forEach(item => {
-      //   if(item.id === id){
-      //       item.status = status;
-      //       flag = true;
-      //       this.$message.success('修改成功');
-      //   }
-      // })
-      if(!flag){
-        supplier.status = !supplier.status
-        this.$message.error('修改失败')
-      }
+    changeStatus(supplier) {
+      this.$store.commit("changeStatus", supplier);
+      this.$message.success("修改成功");
     },
     // 搜索按钮
-    searchSupplier(){
-      this.getSupplierList()
+    searchSupplier() {
+      this.getSupplierList();
     },
     // 重置按钮
-    resetKeyword(){
-        this.keyword = ''
-        this.getSupplierList()
+    resetKeyword() {
+      this.keyword = "";
+      this.getSupplierList();
     },
     // 新增供应商按钮跳转路由
-    goSupplier(){
-        this.$emit('changeSubRoute', '新增供应商')
-        this.$router.push('/addsupplier')
+    goSupplier() {
+      this.$emit("changeSubRoute", "新增供应商");
+      this.$router.push("/addsupplier");
     },
-    // 接受添加供应商组件传来的参数添加到供应商列表中
-    // addSupplierFormHandler(data){
-    //   this.$store.commit('addSupplierForm',data)
-    // }
+    // 删除按钮
+    deleteSupplier(supplier) {
+      this.$confirm(
+        "此操作将永久删除" + supplier.supplier + ", 是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }
+      )
+        .then(() => {
+          this.$store.commit("deleteSupplier", supplier.id);//删除
+          this.getSupplierList();//重新获取
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    // 编辑按钮
+    goEditSupplier(id){
+      this.$emit("changeSubRoute", "编辑供应商");
+      this.$router.push(`/editsupplier/${id}`)
+    },
+    // 详情按钮
+    goDetailSupplier(id){
+      this.$emit('changeSubRoute', "供应商详情")
+      this.$router.push('/detailsupplier/' + id)
+    }
   },
-  created(){
-    this.getSupplierList()
-    // bus.$on('addSupplierForm', this.addSupplierFormHandler)
+  created() {
+    this.getSupplierList();
   },
   computed: {
-    supplierList(){
-      return this.$store.state.supplierList
+    supplierList() {
+      this.totalNum = this.$store.state.supplierListTotal;
+      return this.$store.state.supplierList;
     }
   }
 };

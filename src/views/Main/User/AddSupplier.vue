@@ -113,10 +113,17 @@ export default {
   methods: {
     submitAddSupplier() {
       this.$refs.addSupplierFormRef.validate(valid => {
-        // if(valid){
-          console.log('开始触发')
-          bus.$emit('addSupplierForm', this.addSupplierForm)
-        // }
+        if(valid){
+          this.$store.commit('addSupplierForm', this.addSupplierForm)
+          this.$message.success('添加成功')
+          for(let key in this.addSupplierForm){
+            if(key !== 'status'){
+              this.addSupplierForm[key] = ''
+            }else{
+              this.addSupplierForm[key] = true
+            }
+          }
+        }
       })
     }
   }
